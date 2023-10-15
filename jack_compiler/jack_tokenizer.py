@@ -7,9 +7,27 @@ class TokenType(Enum):
     UNKNOWN = 0
     KEYWORD = 1
     SYMBOL = 2
-    INTEGER_CONSTANT = 3
-    STRING_CONSTANT = 4
+    INT_CONST = 3
+    STRING_CONST = 4
     IDENTFIER = 5
+
+
+class Token:
+    KEYWORDS = {
+        "class", "constructor", "function", "method", "field", "static", "var", "int", "char",
+        "boolean", "void", "true", "false", "null", "this", "let", "do", "if", "else", "while",
+        "return"
+    }
+
+    def __init__(self, token_type: TokenType, token_text: str):
+        self.type = token_type
+        self.text = token_text
+
+        if token_type == TokenType.IDENTFIER:
+            if token_text in Token.KEYWORDS:
+                self.type = TokenType.KEYWORD
+            elif token_text[0] in "0123456789":
+                self.type = TokenType.INT_CONST
 
 
 class JackTokenizer:
@@ -22,7 +40,7 @@ class JackTokenizer:
         self.tokens = self._parse_tokens(file_text)
         self.current_token_number = -1
 
-    def _parse_tokens(self, file_text: str) -> List[str]:
+    def _parse_tokens(self, file_text: str) -> List[Token]:
         lines = self._get_valid_lines(file_text)
         tokens = []
 
@@ -33,23 +51,23 @@ class JackTokenizer:
             for i in range(len(line)):
                 if line[i] in JackTokenizer.SYMBOLS:
                     if token_type != TokenType.UNKNOWN:
-                        tokens.append(line[token_start_index:i])
+                        tokens.append(self._to_token(token_type, line[token_start_index:i]))
                         token_type = TokenType.UNKNOWN
 
-                    tokens.append(line[i])
+                    tokens.append(self._to_token(TokenType.SYMBOL, line[i]))
                 elif line[i] == " ":
-                    if token_type == token_type.STRING_CONSTANT:
+                    if token_type == token_type.STRING_CONST:
                         continue
 
                     if token_type != TokenType.UNKNOWN:
-                        tokens.append(line[token_start_index:i])
+                        tokens.append(self._to_token(token_type, line[token_start_index:i]))
                         token_type = token_type.UNKNOWN
                 elif line[i] == '"':
                     if token_type == TokenType.UNKNOWN:
-                        token_type = TokenType.STRING_CONSTANT
+                        token_type = TokenType.STRING_CONST
                         token_start_index = i
                     else:
-                        tokens.append(line[token_start_index:i])
+                        tokens.append(self._to_token(token_type, line[token_start_index:i]))
                         token_type = token_type.UNKNOWN
                 else:
                     if token_type == TokenType.UNKNOWN:
@@ -57,9 +75,12 @@ class JackTokenizer:
                         token_start_index = i
 
             if token_type != TokenType.UNKNOWN:
-                tokens.append(line[token_start_index:len(line)])
+                tokens.append(self._to_token(token_type, line[token_start_index:len(line)]))
 
         return tokens
+
+    def _to_token(self, token_type: TokenType, token_text: str):
+        return Token(token_type, token_text)
 
     def _get_valid_lines(self, file_text: str) -> List[str]:
         file_text = self._delete_comments(file_text)
@@ -83,3 +104,6 @@ class JackTokenizer:
 
     def advance(self):
         self.current_token_number += 1
+
+    def token_type(self):
+        return self.tokens[self.current_token_number].type
