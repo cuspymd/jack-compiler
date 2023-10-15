@@ -1,15 +1,9 @@
 import unittest
 
-from jack_compiler.jack_tokenizer import JackTokenizer, TokenType
+from jack_compiler.jack_tokenizer import JackTokenizer, TokenType, Token
 
 
 class TestJackTokenizer(unittest.TestCase):
-    KEYWORDS = {
-        "class", "constructor", "function", "method", "field", "static", "var", "int", "char",
-        "boolean", "void", "true", "false", "null", "this", "let", "do", "if", "else", "while",
-        "return"
-    }
-
     def test_has_more_tokens_given_empty_line(self):
         tokenizer = JackTokenizer("")
         self.assertFalse(tokenizer.has_more_tokens())
@@ -84,7 +78,7 @@ class TestJackTokenizer(unittest.TestCase):
         self.assertFalse(tokenizer.has_more_tokens())
 
     def test_token_type_given_keyword(self):
-        for keyword in TestJackTokenizer.KEYWORDS:
+        for keyword in Token.KEYWORD_TABLE.keys():
             tokenizer = JackTokenizer(keyword)
             tokenizer.advance()
             self.assertEqual(TokenType.KEYWORD, tokenizer.token_type())
@@ -110,3 +104,31 @@ class TestJackTokenizer(unittest.TestCase):
         tokenizer = JackTokenizer('"test string"')
         tokenizer.advance()
         self.assertEqual(TokenType.STRING_CONST, tokenizer.token_type())
+
+    def test_keyword_given_keyword(self):
+        for keyword_text, keyword_type in Token.KEYWORD_TABLE.items():
+            tokenizer = JackTokenizer(keyword_text)
+            tokenizer.advance()
+            self.assertEqual(keyword_type, tokenizer.keyword())
+
+    def test_symbol_given_symbol(self):
+        symbol_text = "{}()[].,;+-*/&|<>=~"
+        for symbol in symbol_text:
+            tokenizer = JackTokenizer(symbol)
+            tokenizer.advance()
+            self.assertEqual(symbol, tokenizer.symbol())
+
+    def test_identifier_given_identifier(self):
+        tokenizer = JackTokenizer("name")
+        tokenizer.advance()
+        self.assertEqual("name", tokenizer.identifier())
+
+    def test_int_val_given_int_const(self):
+        tokenizer = JackTokenizer("123")
+        tokenizer.advance()
+        self.assertEqual(123, tokenizer.int_val())
+
+    def test_string_val_given_string_const(self):
+        tokenizer = JackTokenizer('"test string"')
+        tokenizer.advance()
+        self.assertEqual("test string", tokenizer.string_val())
