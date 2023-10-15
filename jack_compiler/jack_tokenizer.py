@@ -1,10 +1,21 @@
 import re
+from enum import Enum
 from typing import List
+
+
+class TokenType(Enum):
+    UNKNOWN = 0
+    KEYWORD = 1
+    SYMBOL = 2
+    INTEGER_CONSTANT = 3
+    STRING_CONSTANT = 4
+    IDENTFIER = 5
 
 
 class JackTokenizer:
     SYMBOLS = {
-        "{", "}", "(", ")", "[", "]", ".", ",", ";", "+", "-", "*", "/", "&", "|", "<", ">", "=", "~"
+        "{", "}", "(", ")", "[", "]", ".", ",", ";",
+        "+", "-", "*", "/", "&", "|", "<", ">", "=", "~"
     }
 
     def __init__(self, file_text: str):
@@ -16,27 +27,36 @@ class JackTokenizer:
         tokens = []
 
         for line in lines:
-            token_type = -1
+            token_type = TokenType.UNKNOWN
             token_start_index = 0
 
             for i in range(len(line)):
-                if token_type == -1:
-                    token_start_index = i
-
                 if line[i] in JackTokenizer.SYMBOLS:
-                    if token_type == 0:
+                    if token_type != TokenType.UNKNOWN:
                         tokens.append(line[token_start_index:i])
-                        token_type = -1
+                        token_type = TokenType.UNKNOWN
 
                     tokens.append(line[i])
                 elif line[i] == " ":
-                    if token_type == 0:
-                        tokens.append(line[token_start_index:i])
-                        token_type = -1
-                else:
-                    token_type = 0
+                    if token_type == token_type.STRING_CONSTANT:
+                        continue
 
-            if token_type == 0:
+                    if token_type != TokenType.UNKNOWN:
+                        tokens.append(line[token_start_index:i])
+                        token_type = token_type.UNKNOWN
+                elif line[i] == '"':
+                    if token_type == TokenType.UNKNOWN:
+                        token_type = TokenType.STRING_CONSTANT
+                        token_start_index = i
+                    else:
+                        tokens.append(line[token_start_index:i])
+                        token_type = token_type.UNKNOWN
+                else:
+                    if token_type == TokenType.UNKNOWN:
+                        token_type = TokenType.IDENTFIER
+                        token_start_index = i
+
+            if token_type != TokenType.UNKNOWN:
                 tokens.append(line[token_start_index:len(line)])
 
         return tokens
