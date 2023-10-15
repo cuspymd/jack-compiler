@@ -1,0 +1,15 @@
+<tokens>
+  <keyword>let</keyword>
+  <identifier>text</identifier>
+  <symbol>=</symbol>
+  <stringConstant>this is string</stringConstant>
+  <symbol>;</symbol>
+  <identifier>a</identifier>
+  <symbol>&lt;</symbol>
+  <identifier>b</identifier>
+  <symbol>;</symbol>
+  <identifier>a</identifier>
+  <symbol>&amp;</symbol>
+  <identifier>b</identifier>
+  <symbol>;</symbol>
+</tokens>
