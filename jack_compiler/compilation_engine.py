@@ -1,4 +1,4 @@
-from jack_compiler.jack_tokenizer import JackTokenizer
+from jack_compiler.jack_tokenizer import JackTokenizer, KeywordType, TokenType
 
 
 class CompilationEngine:
@@ -29,10 +29,45 @@ class CompilationEngine:
         self._write_keyword()
         self._write_identifier()
         self._write_symbol()
-        self._write_symbol()
+
+        self._tokenizer.advance()
+        while self._tokenizer.token_type() == TokenType.KEYWORD and \
+                self._tokenizer.keyword() in (KeywordType.STATIC, KeywordType.FIELD):
+            self.compile_class_var_dec()
+
+        self._write_symbol(advance=False)
 
         self._dec_indent()
         self._output_file.write("</class>\n")
+
+    def compile_class_var_dec(self):
+        self._output_file.write(f"{self._get_indent()}<classVarDec>\n")
+        self._inc_indent()
+
+        self._write_keyword(advance=False)
+        self._write_type()
+        self._write_identifier()
+
+        self._tokenizer.advance()
+        while self._tokenizer.symbol() == ",":
+            self._write_symbol(advance=False)
+            self._write_identifier()
+            self._tokenizer.advance()
+
+        self._write_symbol(advance=False)
+        self._tokenizer.advance()
+
+        self._dec_indent()
+        self._output_file.write(f"{self._get_indent()}</classVarDec>\n")
+
+    def _write_type(self, advance=True):
+        if advance:
+            self._tokenizer.advance()
+
+        if self._tokenizer.token_type() == TokenType.KEYWORD:
+            self._write_keyword(advance=False)
+        else:
+            self._write_identifier(advance=False)
 
     def _write_keyword(self, advance=True):
         if advance:

@@ -9,7 +9,12 @@ class TestCompilationEngine(unittest.TestCase):
         self.maxDiff = None
 
     def test_compile_class_given_empty_class(self):
-        test_name = "empty_class"
+        self._test_compile_class("empty_class")
+
+    def test_compile_class_given_class_var_dec(self):
+        self._test_compile_class("class_var_dec")
+
+    def _test_compile_class(self, test_name):
         with self._create_engine(test_name) as engine:
             engine.compile_class()
 

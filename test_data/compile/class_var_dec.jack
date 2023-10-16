@@ -1,0 +1,5 @@
+class Test {
+  field int a, b;
+  static char c;
+  static Date d;
+}
