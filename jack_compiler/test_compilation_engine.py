@@ -17,6 +17,9 @@ class TestCompilationEngine(unittest.TestCase):
     def test_compile_class_given_subroutine_dec(self):
         self._test_compile_class("subroutine_dec")
 
+    def test_compile_class_given_var_dec(self):
+        self._test_compile_class("var_dec")
+
     def _test_compile_class(self, test_name):
         with self._create_engine(test_name) as engine:
             engine.compile_class()

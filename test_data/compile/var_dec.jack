@@ -1,0 +1,6 @@
+class Test {
+  method int get_num() {
+    var boolean is_name;
+    var Test prev, next;
+  }
+}
