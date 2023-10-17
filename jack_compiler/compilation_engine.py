@@ -73,11 +73,37 @@ class CompilationEngine:
         self._inc_indent()
 
         self._write_symbol(advance=False)
-        self._write_symbol()
+        self._tokenizer.advance()
+        while self._tokenizer.token_type() == TokenType.KEYWORD and \
+                self._tokenizer.keyword() == KeywordType.VAR:
+            self.compile_var_dec()
+
+        # statements
+        self._write_symbol(advance=False)
         self._tokenizer.advance()
 
         self._dec_indent()
         self._output_file.write(f"{self._get_indent()}</subroutineBody>\n")
+
+    def compile_var_dec(self):
+        self._output_file.write(f"{self._get_indent()}<varDec>\n")
+        self._inc_indent()
+
+        self._write_keyword(advance=False)
+        self._write_type()
+        self._write_identifier()
+
+        self._tokenizer.advance()
+        while self._tokenizer.symbol() == ",":
+            self._write_symbol(advance=False)
+            self._write_identifier()
+            self._tokenizer.advance()
+
+        self._write_symbol(advance=False)
+        self._tokenizer.advance()
+
+        self._dec_indent()
+        self._output_file.write(f"{self._get_indent()}</varDec>\n")
 
     def compile_class_var_dec(self):
         self._output_file.write(f"{self._get_indent()}<classVarDec>\n")
