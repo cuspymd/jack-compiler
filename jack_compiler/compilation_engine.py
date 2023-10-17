@@ -1,6 +1,22 @@
 from jack_compiler.jack_tokenizer import JackTokenizer, KeywordType, TokenType
 
 
+def tag(tag_name):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            self = args[0]
+            self._output_file.write(f"{self._get_indent()}<{tag_name}>\n")
+            self._inc_indent()
+
+            func(*args, **kwargs)
+
+            self._dec_indent()
+            self._output_file.write(f"{self._get_indent()}</{tag_name}>\n")
+
+        return wrapper
+    return decorator
+
+
 class CompilationEngine:
     def __init__(self, input_path: str, output_path: str):
         with open(input_path, "r") as input_file:
@@ -22,10 +38,8 @@ class CompilationEngine:
     def _dec_indent(self):
         self._indent_width -= 2
 
+    @tag("class")
     def compile_class(self):
-        self._output_file.write("<class>\n")
-        self._inc_indent()
-
         self._write_keyword()
         self._write_identifier()
         self._write_symbol()
@@ -42,13 +56,8 @@ class CompilationEngine:
 
         self._write_symbol(advance=False)
 
-        self._dec_indent()
-        self._output_file.write("</class>\n")
-
+    @tag("subroutineDec")
     def compile_subroutine_dec(self):
-        self._output_file.write(f"{self._get_indent()}<subroutineDec>\n")
-        self._inc_indent()
-
         self._write_keyword(advance=False)
         self._tokenizer.advance()
 
@@ -59,19 +68,32 @@ class CompilationEngine:
 
         self._write_identifier()
         self._write_symbol()
-        # parameter list
-        self._write_symbol()
+
+        self._tokenizer.advance()
+        self.compile_parameter_list()
+
+        self._write_symbol(advance=False)
 
         self._tokenizer.advance()
         self.compile_subroutine_body()
 
-        self._dec_indent()
-        self._output_file.write(f"{self._get_indent()}</subroutineDec>\n")
+    @tag("parameterList")
+    def compile_parameter_list(self):
+        if self._tokenizer.token_type() == TokenType.SYMBOL:
+            return
 
+        self._write_type(advance=False)
+        self._write_identifier()
+        self._tokenizer.advance()
+
+        while self._tokenizer.symbol() == ",":
+            self._write_symbol(advance=False)
+            self._write_type()
+            self._write_identifier()
+            self._tokenizer.advance()
+
+    @tag("subroutineBody")
     def compile_subroutine_body(self):
-        self._output_file.write(f"{self._get_indent()}<subroutineBody>\n")
-        self._inc_indent()
-
         self._write_symbol(advance=False)
         self._tokenizer.advance()
         while self._tokenizer.token_type() == TokenType.KEYWORD and \
@@ -82,13 +104,8 @@ class CompilationEngine:
         self._write_symbol(advance=False)
         self._tokenizer.advance()
 
-        self._dec_indent()
-        self._output_file.write(f"{self._get_indent()}</subroutineBody>\n")
-
+    @tag("varDec")
     def compile_var_dec(self):
-        self._output_file.write(f"{self._get_indent()}<varDec>\n")
-        self._inc_indent()
-
         self._write_keyword(advance=False)
         self._write_type()
         self._write_identifier()
@@ -102,13 +119,8 @@ class CompilationEngine:
         self._write_symbol(advance=False)
         self._tokenizer.advance()
 
-        self._dec_indent()
-        self._output_file.write(f"{self._get_indent()}</varDec>\n")
-
+    @tag("classVarDec")
     def compile_class_var_dec(self):
-        self._output_file.write(f"{self._get_indent()}<classVarDec>\n")
-        self._inc_indent()
-
         self._write_keyword(advance=False)
         self._write_type()
         self._write_identifier()
@@ -121,9 +133,6 @@ class CompilationEngine:
 
         self._write_symbol(advance=False)
         self._tokenizer.advance()
-
-        self._dec_indent()
-        self._output_file.write(f"{self._get_indent()}</classVarDec>\n")
 
     def _write_type(self, advance=True):
         if advance:

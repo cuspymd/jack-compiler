@@ -3,24 +3,13 @@
   <identifier>Test</identifier>
   <symbol>{</symbol>
   <subroutineDec>
-    <keyword>constructor</keyword>
-    <identifier>Test</identifier>
-    <identifier>new</identifier>
+    <keyword>method</keyword>
+    <keyword>int</keyword>
+    <identifier>get_num</identifier>
     <symbol>(</symbol>
     <parameterList>
-    </parameterList>
-    <symbol>)</symbol>
-    <subroutineBody>
-      <symbol>{</symbol>
-      <symbol>}</symbol>
-    </subroutineBody>
-  </subroutineDec>
-  <subroutineDec>
-    <keyword>function</keyword>
-    <keyword>void</keyword>
-    <identifier>run</identifier>
-    <symbol>(</symbol>
-    <parameterList>
+      <keyword>int</keyword>
+      <identifier>num</identifier>
     </parameterList>
     <symbol>)</symbol>
     <subroutineBody>
@@ -31,9 +20,14 @@
   <subroutineDec>
     <keyword>method</keyword>
     <keyword>int</keyword>
-    <identifier>get_num</identifier>
+    <identifier>get_num2</identifier>
     <symbol>(</symbol>
     <parameterList>
+      <keyword>int</keyword>
+      <identifier>num</identifier>
+      <symbol>,</symbol>
+      <identifier>Test</identifier>
+      <identifier>test</identifier>
     </parameterList>
     <symbol>)</symbol>
     <subroutineBody>

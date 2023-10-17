@@ -1,0 +1,4 @@
+class Test {
+  method int get_num(int num) {}
+  method int get_num2(int num, Test test) {}
+}
