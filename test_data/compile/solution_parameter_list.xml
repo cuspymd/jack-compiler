@@ -14,6 +14,8 @@
     <symbol>)</symbol>
     <subroutineBody>
       <symbol>{</symbol>
+      <statements>
+      </statements>
       <symbol>}</symbol>
     </subroutineBody>
   </subroutineDec>
@@ -32,6 +34,8 @@
     <symbol>)</symbol>
     <subroutineBody>
       <symbol>{</symbol>
+      <statements>
+      </statements>
       <symbol>}</symbol>
     </subroutineBody>
   </subroutineDec>

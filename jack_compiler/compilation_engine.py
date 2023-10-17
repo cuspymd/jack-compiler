@@ -100,8 +100,48 @@ class CompilationEngine:
                 self._tokenizer.keyword() == KeywordType.VAR:
             self.compile_var_dec()
 
-        # statements
+        self.compile_statements()
         self._write_symbol(advance=False)
+        self._tokenizer.advance()
+
+    @tag("statements")
+    def compile_statements(self):
+        while self._tokenizer.token_type() == TokenType.KEYWORD:
+            match self._tokenizer.keyword():
+                case KeywordType.LET:
+                    self.compile_let()
+                case _:
+                    break
+
+    @tag("letStatement")
+    def compile_let(self):
+        self._write_keyword(advance=False)
+        self._write_identifier()
+        self._tokenizer.advance()
+
+        if self._tokenizer.symbol() == "[":
+            self._write_symbol(advance=False)
+            self._tokenizer.advance()
+            self.compile_expression()
+            self._write_symbol(advance=False)
+            self._tokenizer.advance()
+
+        self._write_symbol(advance=False)
+        self._tokenizer.advance()
+        self.compile_expression()
+
+        self._write_symbol(advance=False)
+        self._tokenizer.advance()
+
+    @tag("expression")
+    def compile_expression(self):
+        self.compile_term()
+        # (op term)*
+
+    @tag("term")
+    def compile_term(self):
+        # temp implementation
+        self._write_identifier(advance=False)
         self._tokenizer.advance()
 
     @tag("varDec")

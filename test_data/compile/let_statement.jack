@@ -1,0 +1,6 @@
+class Test {
+  method int get_num() {
+    let num = a;
+    let nums[b] = c;
+  }
+}

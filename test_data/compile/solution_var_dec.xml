@@ -26,6 +26,8 @@
         <identifier>next</identifier>
         <symbol>;</symbol>
       </varDec>
+      <statements>
+      </statements>
       <symbol>}</symbol>
     </subroutineBody>
   </subroutineDec>
