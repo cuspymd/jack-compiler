@@ -1,0 +1,11 @@
+class Test {
+  method int get_num() {
+    if (a) {
+      if (b) {
+        let c = d;
+      } else {
+      
+      }
+    }
+  }
+}

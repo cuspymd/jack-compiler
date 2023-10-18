@@ -26,6 +26,9 @@ class TestCompilationEngine(unittest.TestCase):
     def test_compile_class_given_let_statement(self):
         self._test_compile_class("let_statement")
 
+    def test_compile_class_given_if_statement(self):
+        self._test_compile_class("if_statement")
+
     def _test_compile_class(self, test_name):
         with self._create_engine(test_name) as engine:
             engine.compile_class()

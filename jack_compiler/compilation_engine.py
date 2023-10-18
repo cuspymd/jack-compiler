@@ -110,8 +110,34 @@ class CompilationEngine:
             match self._tokenizer.keyword():
                 case KeywordType.LET:
                     self.compile_let()
+                case KeywordType.IF:
+                    self.compile_if()
                 case _:
                     break
+
+    @tag("ifStatement")
+    def compile_if(self):
+        self._write_keyword(advance=False)
+        self._write_symbol()
+        self._tokenizer.advance()
+        self.compile_expression()
+        self._write_symbol(advance=False)
+
+        self._write_statements_block()
+
+        self._tokenizer.advance()
+        if self._tokenizer.token_type() == TokenType.KEYWORD and \
+           self._tokenizer.keyword() == KeywordType.ELSE:
+
+            self._write_keyword(advance=False)
+            self._write_statements_block()
+            self._tokenizer.advance()
+
+    def _write_statements_block(self):
+        self._write_symbol()
+        self._tokenizer.advance()
+        self.compile_statements()
+        self._write_symbol(advance=False)
 
     @tag("letStatement")
     def compile_let(self):
