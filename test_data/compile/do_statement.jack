@@ -1,0 +1,7 @@
+class Test {
+  method int get_num() {
+    do test1();
+    do test2(a, b);
+    do Test.test3(c);
+  }
+}

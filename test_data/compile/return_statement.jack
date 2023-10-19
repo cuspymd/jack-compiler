@@ -1,0 +1,6 @@
+class Test {
+  method int get_num() {
+    return;
+    return a;
+  }
+}

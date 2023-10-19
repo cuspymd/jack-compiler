@@ -29,6 +29,15 @@ class TestCompilationEngine(unittest.TestCase):
     def test_compile_class_given_if_statement(self):
         self._test_compile_class("if_statement")
 
+    def test_compile_class_given_while_statement(self):
+        self._test_compile_class("while_statement")
+
+    def test_compile_class_given_do_statement(self):
+        self._test_compile_class("do_statement")
+
+    def test_compile_class_given_return_statement(self):
+        self._test_compile_class("return_statement")
+
     def _test_compile_class(self, test_name):
         with self._create_engine(test_name) as engine:
             engine.compile_class()

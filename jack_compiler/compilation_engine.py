@@ -112,8 +112,67 @@ class CompilationEngine:
                     self.compile_let()
                 case KeywordType.IF:
                     self.compile_if()
+                case KeywordType.WHILE:
+                    self.compile_while()
+                case KeywordType.DO:
+                    self.compile_do()
+                case KeywordType.RETURN:
+                    self.compile_return()
                 case _:
                     break
+
+    @tag("returnStatement")
+    def compile_return(self):
+        self._write_keyword(advance=False)
+        self._tokenizer.advance()
+
+        if self._tokenizer.symbol() != ";":
+            self.compile_expression()
+
+        self._write_symbol(advance=False)
+        self._tokenizer.advance()
+
+    @tag("doStatement")
+    def compile_do(self):
+        self._write_keyword(advance=False)
+        self._write_identifier()
+        self._tokenizer.advance()
+
+        if self._tokenizer.symbol() == ".":
+            self._write_symbol(advance=False)
+            self._write_identifier()
+            self._tokenizer.advance()
+
+        self._write_symbol(advance=False)
+        self._tokenizer.advance()
+        self.compile_expression_list()
+        self._write_symbol(advance=False)
+
+        self._write_symbol()
+        self._tokenizer.advance()
+
+    @tag("expressionList")
+    def compile_expression_list(self):
+        if self._tokenizer.symbol() == ")":
+            return
+
+        self.compile_expression()
+
+        while self._tokenizer.symbol() == ",":
+            self._write_symbol(advance=False)
+            self._tokenizer.advance()
+            self.compile_expression()
+
+    @tag("whileStatement")
+    def compile_while(self):
+        self._write_keyword(advance=False)
+        self._write_symbol()
+        self._tokenizer.advance()
+        self.compile_expression()
+        self._write_symbol(advance=False)
+
+        self._write_statements_block()
+        self._tokenizer.advance()
 
     @tag("ifStatement")
     def compile_if(self):

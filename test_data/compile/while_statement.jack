@@ -1,0 +1,7 @@
+class Test {
+  method int get_num() {
+    while (a) {
+      let b = a;
+    }
+  }
+}

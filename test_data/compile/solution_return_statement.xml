@@ -1,0 +1,34 @@
+<class>
+  <keyword>class</keyword>
+  <identifier>Test</identifier>
+  <symbol>{</symbol>
+  <subroutineDec>
+    <keyword>method</keyword>
+    <keyword>int</keyword>
+    <identifier>get_num</identifier>
+    <symbol>(</symbol>
+    <parameterList>
+    </parameterList>
+    <symbol>)</symbol>
+    <subroutineBody>
+      <symbol>{</symbol>
+      <statements>
+        <returnStatement>
+          <keyword>return</keyword>
+          <symbol>;</symbol>
+        </returnStatement>
+        <returnStatement>
+          <keyword>return</keyword>
+          <expression>
+            <term>
+              <identifier>a</identifier>
+            </term>
+          </expression>
+          <symbol>;</symbol>
+        </returnStatement>
+      </statements>
+      <symbol>}</symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol>}</symbol>
+</class>
