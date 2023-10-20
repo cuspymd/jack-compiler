@@ -26,6 +26,15 @@
           </expression>
           <symbol>;</symbol>
         </returnStatement>
+        <returnStatement>
+          <keyword>return</keyword>
+          <expression>
+            <term>
+              <keyword>this</keyword>
+            </term>
+          </expression>
+          <symbol>;</symbol>
+        </returnStatement>
       </statements>
       <symbol>}</symbol>
     </subroutineBody>

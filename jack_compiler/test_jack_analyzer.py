@@ -11,12 +11,12 @@ class TestJackAnalyzer(unittest.TestCase):
 
     def test_token_given_file(self):
         analyzer = JackAnalyzer()
-        analyzer.run("test_data/token/token.jack")
+        analyzer.run("test_data/token/token.jack", True)
         self._verify_token("token.jack")
 
     def test_token_given_folder(self):
         analyzer = JackAnalyzer()
-        analyzer.run("test_data/token")
+        analyzer.run("test_data/token", True)
         self._verify_token("token.jack")
         self._verify_token("token2.jack")
 

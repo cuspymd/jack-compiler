@@ -2,17 +2,38 @@ import html
 import argparse
 from pathlib import Path
 from jack_compiler.jack_tokenizer import TokenType, JackTokenizer
+from jack_compiler.compilation_engine import CompilationEngine
 
 
 class JackAnalyzer:
-    def run(self, input_path_str: str):
+    def run(self, input_path_str: str, token_test: bool):
         input_path = Path(input_path_str)
-        if input_path.is_file():
-            self._analyze_file(input_path)
-        elif input_path.is_dir():
-            self._analyze_folder(input_path)
 
-    def _analyze_file(self, input_path: Path):
+        if token_test:
+            self._run_token_test(input_path)
+        else:
+            self._run_analysis(input_path)
+
+    def _run_analysis(self, input_path: Path):
+        if input_path.is_file():
+            self._run_analysis_file(input_path)
+        elif input_path.is_dir():
+            self._run_analysis_folder(input_path)
+
+    def _run_token_test(self, input_path: Path):
+        if input_path.is_file():
+            self._run_token_test_file(input_path)
+        elif input_path.is_dir():
+            self._run_token_test_folder(input_path)
+
+    def _run_analysis_file(self, input_path: Path):
+        input_path_str = str(input_path)
+        output_path_str = str(input_path.with_suffix(".xml"))
+
+        with CompilationEngine(input_path_str, output_path_str) as engine:
+            engine.compile_class()
+
+    def _run_token_test_file(self, input_path: Path):
         with input_path.open(mode="r") as input_file:
             input_text = input_file.read()
 
@@ -50,19 +71,25 @@ class JackAnalyzer:
     def _escape(self, text: str) -> str:
         return html.escape(text)
 
-    def _analyze_folder(self, input_folder: Path):
+    def _run_analysis_folder(self, input_folder: Path):
         jack_files = input_folder.glob("*.jack")
         for jack_file in jack_files:
-            self._analyze_file(jack_file)
+            self._run_analysis_file(jack_file)
+
+    def _run_token_test_folder(self, input_folder: Path):
+        jack_files = input_folder.glob("*.jack")
+        for jack_file in jack_files:
+            self._run_token_test_file(jack_file)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_path")
+    parser.add_argument("--token-test", action="store_true")
     args = parser.parse_args()
 
     print(f"Start translating for '{args.input_path}'")
 
     analyzer = JackAnalyzer()
-    analyzer.run(args.input_path)
+    analyzer.run(args.input_path, args.token_test)
     print("Completed")

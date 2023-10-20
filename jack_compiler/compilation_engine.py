@@ -226,7 +226,15 @@ class CompilationEngine:
     @tag("term")
     def compile_term(self):
         # temp implementation
-        self._write_identifier(advance=False)
+        if self._tokenizer.token_type() == TokenType.KEYWORD and \
+           self._tokenizer.keyword() in (
+               KeywordType.TRUE, KeywordType.FALSE, KeywordType.NULL, KeywordType.THIS
+           ):  # keywordConstant
+
+            self._write_keyword(advance=False)
+        else:
+            self._write_identifier(advance=False)
+
         self._tokenizer.advance()
 
     @tag("varDec")
