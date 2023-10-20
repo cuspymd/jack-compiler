@@ -1,3 +1,4 @@
+import html
 from jack_compiler.jack_tokenizer import JackTokenizer, KeywordType, TokenType
 
 
@@ -221,21 +222,69 @@ class CompilationEngine:
     @tag("expression")
     def compile_expression(self):
         self.compile_term()
-        # (op term)*
+
+        while self._tokenizer.symbol() in "+-*/&|<>=":
+            self._write_symbol(advance=False)
+            self._tokenizer.advance()
+            self.compile_term()
 
     @tag("term")
     def compile_term(self):
-        # temp implementation
-        if self._tokenizer.token_type() == TokenType.KEYWORD and \
-           self._tokenizer.keyword() in (
-               KeywordType.TRUE, KeywordType.FALSE, KeywordType.NULL, KeywordType.THIS
-           ):  # keywordConstant
+        match self._tokenizer.token_type():
+            case TokenType.INT_CONST:
+                self._write_integer_constant(advance=False)
+                self._tokenizer.advance()
+            case TokenType.STRING_CONST:
+                self._write_string_constant(advance=False)
+                self._tokenizer.advance()
+            case TokenType.KEYWORD:
+                if self._tokenizer.keyword() in (
+                    KeywordType.TRUE, KeywordType.FALSE, KeywordType.NULL, KeywordType.THIS
+                ):
+                    self._write_keyword(advance=False)
+                    self._tokenizer.advance()
+            case TokenType.IDENTFIER:
+                self._write_identifier(advance=False)
+                self._tokenizer.advance()
 
-            self._write_keyword(advance=False)
-        else:
-            self._write_identifier(advance=False)
+                match self._tokenizer.symbol():
+                    case ".":  # '.'subroutineName
+                        self._write_symbol(advance=False)
+                        self._write_identifier()
 
-        self._tokenizer.advance()
+                        self._write_symbol()
+                        self._tokenizer.advance()
+                        self.compile_expression_list()
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+
+                    case "(":  # '('expressionList')'
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+                        self.compile_expression_list()
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+
+                    case "[":  # '['expression']'
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+                        self.compile_expression()
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+
+            case TokenType.SYMBOL:
+                match self._tokenizer.symbol():
+                    case "(":  # '('expression')'
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+                        self.compile_expression()
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+
+                    case "-" | "~":  # unaryOp term
+                        self._write_symbol(advance=False)
+                        self._tokenizer.advance()
+                        self.compile_term()
 
     @tag("varDec")
     def compile_var_dec(self):
@@ -295,7 +344,21 @@ class CompilationEngine:
             self._tokenizer.advance()
 
         self._output_file.write(
-            f"{self._get_indent()}<symbol>{self._tokenizer.symbol()}</symbol>\n")
+            f"{self._get_indent()}<symbol>{html.escape(self._tokenizer.symbol())}</symbol>\n")
+
+    def _write_integer_constant(self, advance=True):
+        if advance:
+            self._tokenizer.advance()
+
+        self._output_file.write(
+            f"{self._get_indent()}<integerConstant>{self._tokenizer.int_val()}</integerConstant>\n")
+
+    def _write_string_constant(self, advance=True):
+        if advance:
+            self._tokenizer.advance()
+
+        self._output_file.write(
+            f"{self._get_indent()}<stringConstant>{self._tokenizer.string_val()}</stringConstant>\n")
 
     def _get_indent(self):
         return " " * self._indent_width
